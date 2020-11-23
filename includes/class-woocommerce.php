@@ -530,8 +530,34 @@ final class WooCommerce {
 				case 'twentytwenty':
 					include_once WC_ABSPATH . 'includes/theme-support/class-wc-twenty-twenty.php';
 					break;
+				case 'twentytwentyone':
+					// Enqueue theme compatibility styles.
+					add_filter( 'woocommerce_enqueue_styles', array( __CLASS__, 'enqueue_styles_2021' ) );
+					break;
 			}
 		}
+	}
+
+	/**
+	 * TODO: Remove this function during the final merge.
+	 * Ideally this would be present in its own class, but not creating it right now to avoid conflicts with other folks working on 2021 changes.
+	 *
+	 * @param array $styles Style sheets.
+	 *
+	 * @return mixed
+	 */
+	public static function enqueue_styles_2021( $styles ) {
+		unset( $styles['woocommerce-general'] );
+
+		$styles['woocommerce-general'] = array(
+			'src'     => str_replace( array( 'http:', 'https:' ), '', WC()->plugin_url() ) . '/assets/css/twenty-twenty-one.css',
+			'deps'    => '',
+			'version' => WC_VERSION,
+			'media'   => 'all',
+			'has_rtl' => true,
+		);
+
+		return $styles;
 	}
 
 	/**
